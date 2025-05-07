@@ -8,9 +8,7 @@ public class Bully {
 
     int max_processes;
 
-    boolean processes[];
-
-
+    boolean[] processes;
 
 
 
@@ -24,33 +22,33 @@ public class Bully {
 
 
 
-        System.out.println("Creating processes..");
+        System.out.println("Creating processes...");
 
-        for(int i = 0; i < max; i++) {
+        for (int i = 0; i < max; i++) {
 
             processes[i] = true;
 
-            System.out.println("P"+ (i+1) + " created");
+            System.out.println("P" + (i + 1) + " created");
 
         }
 
         System.out.println("Process P" + coordinator + " is the coordinator");
 
-
-
     }
+
+
 
     void displayProcesses() {
 
-        for(int i = 0; i < max_processes; i++) {
+        for (int i = 0; i < max_processes; i++) {
 
-            if(processes[i]) {
+            if (processes[i]) {
 
-                System.out.println("P" + (i+1) + " is up");
+                System.out.println("P" + (i + 1) + " is up");
 
             } else {
 
-                System.out.println("P" + (i+1) + " is down");
+                System.out.println("P" + (i + 1) + " is down");
 
             }
 
@@ -64,7 +62,7 @@ public class Bully {
 
     void upProcess(int process_id) {
 
-        if(!processes[process_id - 1]) {
+        if (!processes[process_id - 1]) {
 
             processes[process_id - 1] = true;
 
@@ -82,7 +80,7 @@ public class Bully {
 
     void downProcess(int process_id) {
 
-        if(!processes[process_id - 1]) {
+        if (!processes[process_id - 1]) {
 
             System.out.println("Process " + process_id + " is already down.");
 
@@ -100,33 +98,51 @@ public class Bully {
 
     void runElection(int process_id) {
 
+        if (!processes[process_id - 1]) {
+
+            System.out.println("Process P" + process_id + " is down and cannot start the election.");
+
+            return;
+
+        }
+
+
+
         coordinator = process_id;
 
-        boolean keepGoing = true;
+        boolean electionInProgress = true;
+
+        System.out.println("Election started by P" + process_id);
 
 
 
-        for(int i = process_id; i < max_processes && keepGoing; i++) {
+        for (int i = process_id; i < max_processes; i++) {
 
-            System.out.println("Election message sent from process " + process_id + " to process " + (i+1));
+            if (processes[i]) {
+
+                System.out.println("Election message sent from process " + process_id + " to process " + (i + 1));
 
 
 
-            if(processes[i]) {
+                if (i + 1 > coordinator) {
 
-                keepGoing = false;
+                    coordinator = i + 1;
 
-                runElection(i + 1);
+                }
 
             }
 
         }
 
+
+
+        System.out.println("Election finished. Process P" + coordinator + " is the new coordinator.");
+
     }
 
 
 
-    public static void main(String args[]) {
+    public static void main(String[] args) {
 
         Bully bully = null;
 
@@ -138,7 +154,7 @@ public class Bully {
 
 
 
-        while(true) {
+        while (true) {
 
             System.out.println("Bully Algorithm");
 
@@ -154,17 +170,17 @@ public class Bully {
 
             System.out.println("6. Exit Program");
 
-            System.out.print("Enter your choice:- ");
+            System.out.print("Enter your choice: ");
 
             choice = sc.nextInt();
 
 
 
-            switch(choice) {
+            switch (choice) {
 
-                case 1: 
+                case 1:
 
-                    System.out.print("Enter the number of processes:- ");
+                    System.out.print("Enter the number of processes: ");
 
                     max_processes = sc.nextInt();
 
@@ -174,39 +190,71 @@ public class Bully {
 
                 case 2:
 
-                    bully.displayProcesses();
+                    if (bully != null) {
+
+                        bully.displayProcesses();
+
+                    } else {
+
+                        System.out.println("No processes created yet.");
+
+                    }
 
                     break;
 
                 case 3:
 
-                    System.out.print("Enter the process number to up:- ");
+                    System.out.print("Enter the process number to up: ");
 
                     process_id = sc.nextInt();
 
-                    bully.upProcess(process_id);
+                    if (bully != null) {
+
+                        bully.upProcess(process_id);
+
+                    } else {
+
+                        System.out.println("No processes created yet.");
+
+                    }
 
                     break;
 
                 case 4:
 
-                    System.out.print("Enter the process number to down:- ");
+                    System.out.print("Enter the process number to down: ");
 
                     process_id = sc.nextInt();
 
-                    bully.downProcess(process_id);
+                    if (bully != null) {
+
+                        bully.downProcess(process_id);
+
+                    } else {
+
+                        System.out.println("No processes created yet.");
+
+                    }
 
                     break;
 
                 case 5:
 
-                    System.out.print("Enter the process number which will perform election:- ");
+                    System.out.print("Enter the process number to run election: ");
 
                     process_id = sc.nextInt();
 
-                    bully.runElection(process_id);
+                    if (bully != null) {
 
-                    bully.displayProcesses();
+                        bully.runElection(process_id);
+
+                        bully.displayProcesses();
+
+                    } else {
+
+                        System.out.println("No processes created yet.");
+
+                    }
 
                     break;
 
@@ -218,7 +266,7 @@ public class Bully {
 
                 default:
 
-                    System.out.println("Error in choice. Please try again.");
+                    System.out.println("Invalid choice. Please try again.");
 
                     break;
 
@@ -229,6 +277,4 @@ public class Bully {
     }
 
 }
-
-
 
